@@ -1,0 +1,155 @@
+//crea le label della griglia
+std::vector<QLabel*> lbls;
+for(int j=0; j<12; j++){
+    for(int i=0; i<15; i++){
+        lbls.push_back(new QLabel(this));
+        lbls.back()->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+        lbls.back()->setGeometry(QRect(50+i*86+(j%2==0?0:43),40+j*75,86,100));
+        QPixmap pic("C:/Users/danil/Desktop/robaccia UNI/programmazione ad oggetti/P R O G E T T O/ConwaysHive/cella.png");
+        lbls.back()->setPixmap(pic);
+        lbls.back()->setScaledContents(true);
+        lbls.back()->setFrameShape(QFrame::HLine);
+        lbls.back()->setFrameStyle(QFrame::NoFrame);
+    }
+}
+
+
+//mainWindow.cpp
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include <QMessageBox>
+#include "insect.h"
+#include "hivebeetle.h"
+#include "honeybee.h"
+#include "queenbee.h"
+#include "larva.h"
+#include "bee.h"
+#include "wasp.h"
+
+QString MainWindow::paths_cells[7]=
+    {":/Images/Images/ape.png",
+     ":/Images/Images/regina.png",
+     ":/Images/Images/larva.png",
+     ":/Images/Images/coleottero.png",
+     ":/Images/Images/vespa.png",
+     ":/Images/Images/cella.png",
+     ":/Images/Images/cellaMiele.png",};              //tag=posizione nell'array
+QString MainWindow::paths_menu[5]=
+    {
+     ":/Images/Images/BW_ape.png",
+     ":/Images/Images/BW_regina.png",
+     ":/Images/Images/BW_larva.png",
+     ":/Images/Images/BW_coleottero.png",
+     ":/Images/Images/BW_vespa.png"};           //foto in bianco e nero per la selezione
+int HiveBeetle::numberOf=0;
+int HoneyBee::numberOf=0;
+int Wasp::numberOf=0;
+int Larva::numberOf=0;
+
+
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+    std::vector<QPushButton*> lbls;
+    for(int j=0; j<10; j++){
+        for(int i=0; i<16; i++){
+            lbls.push_back(new QPushButton(this));
+            lbls.back()->setGeometry(QRect(50+i*86+(j%2==0?0:43),190+j*75,86,100));
+            lbls.back()->setIcon(QPixmap(paths_cells[5]));
+            lbls.back()->setIconSize(QSize(86, 100));
+            lbls.back()->setStyleSheet("border: 0");
+            connect(lbls.back(), SIGNAL(clicked()), this, SLOT(cellIsClicked()));
+            lbls.back()->setProperty("tag", "5");
+        }
+    }
+    selected=-1;
+    queenPresent=false;
+    std::pair<int, int> pos[5] = {{1520, 190},
+                                  {1690, 190},
+                                  {1605, 338},
+                                  {1520, 486},
+                                  {1690, 486} };
+    for(int i=0; i<5; i++){
+        menuCells[i]=new QPushButton(this);
+        menuCells[i]->setGeometry((QRect(pos[i].first, pos[i].second, 200, 200)));
+        menuCells[i]->setIcon(QPixmap(paths_menu[i]));
+        menuCells[i]->setIconSize(QSize(200, 200));
+        menuCells[i]->setStyleSheet("border: 0");
+        connect(menuCells[i], SIGNAL(clicked()), this, SLOT(menuCellIsClicked()));
+        menuCells[i]->setProperty("tag", i);
+    }
+}
+void MainWindow::cellIsClicked(){
+    if(selected==-1)
+        return;
+    QPushButton* cell = qobject_cast<QPushButton*>(sender());
+    if(cell->property("tag")=="5"){
+        if(selected==1){
+            if(queenPresent){
+                QMessageBox m;
+                m.setText("C'è già una regina nel campo da gioco.");
+                m.exec();
+                return;
+            }
+            queenPresent=true;
+        }
+        cell->setIcon(QPixmap(paths_cells[selected]));
+        cell->setProperty("tag", selected);
+    }
+    else{
+        cell->setIcon(QPixmap(paths_cells[5]));
+        if(cell->property("tag")=="1")
+            queenPresent=false;
+        cell->setProperty("tag", "5");
+    }
+}
+void MainWindow::menuCellIsClicked(){
+    QPushButton* pressed = qobject_cast<QPushButton*>(sender());
+    int tag=pressed->property("tag").toInt();
+    if(selected!=tag){
+        if(selected!=-1)
+            menuCells[selected]->setIcon(QPixmap(paths_menu[selected]));
+        selected=tag;
+        pressed->setIcon(QPixmap(paths_cells[selected]));
+    }
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+//controls
+QHBoxLayout* selections1 = new QHBoxLayout;
+    selections1->setSpacing(0);
+    for(int i=0; i<3; i++){
+        menuCells[i]= new QPushButton(this);
+        menuCells[i]->setIcon(QPixmap(paths_select[i]));
+        menuCells[i]->setIconSize(QSize(148, 175));
+        menuCells[i]->setStyleSheet("border: 0");
+        menuCells[i]->setMaximumSize(148, 175);
+        connect(menuCells[i], SIGNAL(clicked()), this, SLOT(menuCellIsClicked()));
+        menuCells[i]->setProperty("tag", i);
+        selections1->addWidget(menuCells[i]);
+    }
+    selections1->addSpacerItem(new QSpacerItem(this->height()/30, 10, QSizePolicy::Fixed));
+    main->addLayout(selections1);
+
+    QHBoxLayout* selections2 = new QHBoxLayout;
+    selections2->setSpacing(0);
+    selections2->addSpacerItem(new QSpacerItem(74, 10, QSizePolicy::Fixed));
+    for(int i=3; i<5; i++){
+        menuCells[i]= new QPushButton(this);
+        menuCells[i]->setIcon(QPixmap(paths_select[i]));
+        menuCells[i]->setIconSize(QSize(148, 175));
+        menuCells[i]->setStyleSheet("border: 0");
+        menuCells[i]->setMaximumSize(148, 175);
+        connect(menuCells[i], SIGNAL(clicked()), this, SLOT(menuCellIsClicked()));
+        menuCells[i]->setProperty("tag", i);
+        selections2->addWidget(menuCells[i]);
+    }
+    selections2->addSpacerItem(new QSpacerItem(this->height()/30, 10, QSizePolicy::Fixed));
+    main->addLayout(selections2);

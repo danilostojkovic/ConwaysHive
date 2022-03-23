@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Images/ape.png</file>
+        <file>Images/BW_ape.png</file>
+        <file>Images/BW_coleottero.png</file>
+        <file>Images/BW_larva.png</file>
+        <file>Images/BW_regina.png</file>
+        <file>Images/BW_vespa.png</file>
+        <file>Images/cella.png</file>
+        <file>Images/cellaMiele.png</file>
+        <file>Images/clear.png</file>
+        <file>Images/coleottero.png</file>
+        <file>Images/cross.png</file>
+        <file>Images/funfacts.jpg</file>
+        <file>Images/FunFacts.png</file>
+        <file>Images/larva.png</file>
+        <file>Images/next.png</file>
+        <file>Images/pause.png</file>
+        <file>Images/regina.png</file>
+        <file>Images/regole.png</file>
+        <file>Images/restart.png</file>
+        <file>Images/rules.jpg</file>
+        <file>Images/sfondo.jpg</file>
+        <file>Images/start.png</file>
+        <file>Images/stats.png</file>
+        <file>Images/titolo.png</file>
+        <file>Images/tree.png</file>
+        <file>Images/vespa.png</file>
+    </qresource>
+</RCC>
